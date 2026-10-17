@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>홍길동 | 디지털 명함</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 16px;
+      background: #f2f4f6;
+      color: #202c3c;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+      line-height: 1.6;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 440px;
+      padding: 40px 32px 24px;
+      border: 1px solid #e8ecf0;
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 12px 36px rgba(32, 44, 60, 0.08);
+      text-align: center;
+    }
+
+    .profile-image {
+      display: block;
+      width: 112px;
+      height: 112px;
+      margin: 0 auto 20px;
+      border: 4px solid #f0f3f8;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    h1 { margin: 0 0 8px; font-size: 28px; letter-spacing: -1px; }
+    .role { margin: 0; color: #425d83; font-size: 15px; font-weight: 600; }
+    .intro { margin: 16px 0 28px; color: #667080; font-size: 15px; word-break: keep-all; }
+    .actions { display: flex; flex-direction: column; gap: 12px; }
+
+    .action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 52px;
+      padding: 13px 16px;
+      border: 1px solid #dce3ed;
+      border-radius: 12px;
+      background: #f5f7fb;
+      color: #314a70;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .action:first-child { background: #315fbb; border-color: #315fbb; color: #fff; }
+    .action:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(32, 44, 60, 0.12); }
+    .action:focus-visible { outline: 3px solid #809fe0; outline-offset: 4px; }
+    .copy-status { min-height: 24px; margin: 16px 0 0; font-size: 13px; color: #425d83; overflow-wrap: anywhere; }
+
+    @media (max-width: 480px) {
+      .card { padding: 32px 22px 20px; border-radius: 20px; }
+      h1 { font-size: 26px; }
+      .role { font-size: 14px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .action { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" aria-labelledby="profile-name">
+    <img class="profile-image" src="../images/cat.png" alt="홍길동의 고양이 프로필 이미지" width="112" height="112">
+    <h1 id="profile-name">홍길동</h1>
+    <p class="role">디지털 마케팅 / 프로덕트 기획자</p>
+    <p class="intro">AI와 데이터를 활용해 비즈니스 문제를 해결 합니다</p>
+
+    <nav class="actions" aria-label="프로필 링크 및 연락처">
+      <a class="action" href="http://a.com/a">포트 폴리오 보기</a>
+      <a class="action" href="http://b.com/b">링크드인 프로필 보기</a>
+      <button class="action" id="copy-email" type="button">이메일 주소 복사하기</button>
+    </nav>
+    <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+  </main>
+
+  <script>
+    const emailAddress = "a@naver.com";
+    const copyButton = document.querySelector("#copy-email");
+    const copyStatus = document.querySelector("#copy-status");
+
+    // 파일을 직접 열거나 클립보드 권한이 없는 경우 사용하는 복사 방법입니다.
+    function copyWithSelection() {
+      const temporaryInput = document.createElement("textarea");
+      temporaryInput.value = emailAddress;
+      temporaryInput.style.position = "fixed";
+      temporaryInput.style.opacity = "0";
+      document.body.appendChild(temporaryInput);
+      temporaryInput.select();
+      temporaryInput.setSelectionRange(0, emailAddress.length);
+      try {
+        return document.execCommand("copy");
+      } finally {
+        temporaryInput.remove();
+        copyButton.focus({ preventScroll: true });
+      }
+    }
+
+    copyButton.addEventListener("click", async () => {
+      let copied = false;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(emailAddress);
+          copied = true;
+        }
+      } catch (error) {
+        // 브라우저가 권한을 거부하면 아래의 대체 방법을 시도합니다.
+      }
+
+      if (!copied) {
+        try { copied = copyWithSelection(); } catch (error) { copied = false; }
+      }
+
+      copyStatus.textContent = copied
+        ? "이메일 주소가 복사되었습니다."
+        : "복사하지 못했습니다. 직접 복사해 주세요: " + emailAddress;
+    });
+  </script>
+</body>
+</html>
